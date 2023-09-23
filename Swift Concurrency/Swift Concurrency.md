@@ -4,9 +4,6 @@ Explore the power of Swift Concurrency in this in-depth article. Learn how to ha
 
 # Table of Contents
 
-1. [Concurrency](#concurrency)
-    1. [Concurrency vs Parallelism](#concurrency_parallelism)
-    1. [Serial Execution vs Concurrent Execution](#serial_vs_concurrent)
 1. [Swift pre-`async`/`await`](#pre_async_await)
     1. [Fetching and Updating a Single Resource Using Closures](#fetch_single_resource_closures)
     1. [Fetching and Updating Multiple Resources Using Closures (Waiting)](#fetch_multiple_resource_closures_waiting)
@@ -44,7 +41,6 @@ Explore the power of Swift Concurrency in this in-depth article. Learn how to ha
     1. [`AsyncSequence` Protocol](#async_sequences_protocol)
     1. [`AsyncStream` - the Implementation of `AsyncSequence` Protocol](#asyncstream)
 1. [Actors](#actors)
-    1. [What is a Data Race and how to prevent it?](#data_races)
     1. [Actors definition](#actors_definition)
     1. [Example: shared mutable state with and without an actor](#actors_example)
     1. [`@MainActor`](#main_actor)
@@ -55,16 +51,6 @@ Explore the power of Swift Concurrency in this in-depth article. Learn how to ha
     1. [Combine](#combine)
 1. [TODO](#todo)
 1. [References](#references)
-
-# Concurrency <a name="concurrency"></a>
-
-"Concurrency" - the ability to execute more than one program/task simultaneously.
-
-## Concurrency vs Parallelism <a name="concurrency_parallelism"></a>
-
-Rob Pike said:
-- Concurrency is about dealing with many things at once, parallelism is about doing many things at once. 
-- Concurrency is a way to structure things so you can maybe use parallelism to do a better job.
 
 ## Serial Execution vs Concurrent Execution <a name="serial_vs_concurrent"></a>
 
@@ -388,23 +374,6 @@ With keeping track of different tasks:
 <img src="images/asyncstream example 2.jpg" width="600"/>
 
 # Actors <a name="actors"></a>
-
-## What is a Data Race and how to prevent it? <a name="data_races"></a>
-
-**Data races occur when:**
-- Usually involves **shared mutable state**.
-- **Two (or more) threads** concurrently **access** the same **data**.
-- One of these accesses is **a write / mutation**.
-
-**Result of a data race:**
-- One of these thread gets a wrong result.
-- A crash
-
-**How to prevent data races in shared mutable state?**
-- Leverage synchronization mechanisms:
-    - Atomics.
-    - Locks (`NSLock`, `NSRecursiveLock`, `os_unfair_lock`, `Mutex`).
-    - Serial dispatch queues.
 
 ## Actors definition <a name="actors_definition"></a>
 
