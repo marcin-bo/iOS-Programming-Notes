@@ -23,10 +23,15 @@ Explore Parallel Programming in iOS in this in-depth article.
 ## Concurrency vs Parallelism <a name="concurrency_parallelism"></a>
 
 Concurrent execution has 2 types: 
-- **Concurrent, non-parallel** execution (also known as **Concurrency**).
+- **Concurrent, non-parallel** execution.
     - When we quickly switch from one task to another, so it seems that all the tasks run at the same time.
 - **Concurrent, parallel** execution (also known as **Parallelism**).
     - When we literally run two or more tasks at the same time, e.g., on a multicore processor.
+
+**Concurrency vs Parallelism**:
+- Concurrency refers managing multiple threads of execution.
+    - Concurrency is the broader term which can encompass parallelism.
+- Parallelism is more specifically, multiple threads of execution executing simultaneously.
 
 <img src="images/concurrent concepts.jpg" width="500"/>
 
@@ -139,3 +144,4 @@ operation2.addDependency(operation1) //execute operation1 before operation2
 - [Run Loops - Threading Programming Guide](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html)
 - [About Threaded Programming - Threading Programming Guide](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/AboutThreads/AboutThreads.html#//apple_ref/doc/uid/10000057i-CH6-SW2)
 - [Migrating Away from Threads - Threading Programming Guide](https://developer.apple.com/library/archive/documentation/General/Conceptual/ConcurrencyProgrammingGuide/ThreadMigration/ThreadMigration.html#//apple_ref/doc/uid/TP40008091-CH105-SW1)
+- [What is the difference between concurrency, parallelism and asynchronous methods? - Stack Overflow](https://stackoverflow.com/questions/4844637/what-is-the-difference-between-concurrency-parallelism-and-asynchronous-methods#comment5379841_4844774)
