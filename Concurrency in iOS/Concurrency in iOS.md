@@ -1,6 +1,6 @@
-# Parallel Programming in iOS
+# Concurrency in iOS
 
-Explore Parallel Programming in iOS in this in-depth article.
+Explore Concurrency in iOS in this in-depth article.
 
 # Table of Contents
 
