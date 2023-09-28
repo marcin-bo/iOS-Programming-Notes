@@ -8,7 +8,7 @@ I also encourage contributions from the iOS developer community to turn this rep
 
 # Table of Contents
 
-1. <a href="Parallel Programming in iOS/Parallel Programming in iOS.md">Parallel Programming in iOS</a>
+1. <a href="Concurrency in iOS/Concurrency in iOS.md">Concurrency in iOS</a>
 1. <a href="Swift Concurrency/Swift Concurrency.md">Swift Concurrency</a>
 
 # TODO
