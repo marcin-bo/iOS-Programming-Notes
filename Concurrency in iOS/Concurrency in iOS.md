@@ -11,6 +11,8 @@ Explore Concurrency in iOS in this in-depth article.
     1. [Process](#process)
     1. [Run Loops](#run_loops)
     1. [Threads](#threads)
+        1. [The Main Thread](#main_thread)
+        1. [Problem With Threads](#problem_with_threads)
         1. [Moving Away from Threads](#threads_go_away)
     1. [Dispatch Queues](#dispatch_queues)
     1. [Operation Queues](#operation_queues)
@@ -25,16 +27,17 @@ Explore Concurrency in iOS in this in-depth article.
 Concurrent execution has 2 types: 
 - **Concurrent, non-parallel** execution (also known as **Concurrency**).
     - A property of a program, is more about **software design**.
-    - Managing (start, run, and complete) multiple tasks in overlapping time periods, in no specific order and abstracted from hardware details.
-    - When a **task** is **divided** into multiple parts and we quickly **switch** from one task/part to another, so it seems that all the tasks run at the same time, it produces illusion of parallelism
-    - Achieved through interleaving operation / context switching
+    - Achieved through interleaving operation / context switching.
     - Needs just one core.
+    - Managing (start, run, and complete) multiple tasks in overlapping time periods, in no specific order and abstracted from hardware details.
+    - When a **task** is **divided** into multiple parts and we quickly **switch** from one task/part to another, so it seems that all the tasks run at the same time, it produces illusion of parallelism.
+
 - **Concurrent, parallel** execution (also known as **Parallelism**).
     - A property of a **machine**, is more about **hardware**.
+    - Achieved through using multiple CPUs.
+    - Needs at least 2 cores.
     - Multiple threads of execution executing simultaneously.
     - When a **task** is **divided** into multiple parts and we literally run two or more tasks/parts at the exactly same time, e.g., on a multicore processor.
-    - Achieved through using multiple CPUs
-    - Needs at least 2 cores.
 
 <img src="images/concurrent concepts.jpg" width="500"/>
 
@@ -88,6 +91,28 @@ iOS provides different tools to use Concurrency.
     - Application responsibilities:
         - Most of the costs associated with creating and maintaining any threads it uses. 
 
+### The Main Thread <a name="main_thread"></a>
+
+- The initial thread – the one the app is first launched with.
+– Always exists for the lifetime of the app.
+- User interface work must take place on the main thread:
+    - When you try to **update your UI from any other thread**:
+        - Nothing happens.
+        - The app crashes.
+        - Or pretty much anywhere in between.
+
+### Problem With Threads <a name="problem_with_threads"></a>
+
+- Managing threads is **complex**.
+- Each thread you create needs to **run somewhere**:
+    - If you accidentally end up creating 40 threads when you have only 4 CPU cores, the system will need to spend a lot of time just swapping them.
+- Swapping threads = **context switch**:
+    - It has a **performance cost**: 
+        - The app must stash away all the data the thread was using.
+        - The app must remember how far it had progressed in its work, before giving another thread the chance to run. 
+- When you create many more threads compared to the number of available CPU cores - **thread explosion**:
+    – The cost of context switching grows high.
+
 ### Moving Away from Threads <a name="threads_go_away"></a>
 
 - There are other solutions that move thread management code to the system level:
@@ -97,29 +122,23 @@ iOS provides different tools to use Concurrency.
     - Define the tasks you want to execute.
     - Add them to an appropriate dispatch queue.
         - The main decision you have to make is whether to do so synchronously or asynchronously.
-- Queues advantages:
-    - It eliminates lock-based code:
-        - Instead of using a lock to protect a shared resource, you can instead create a queue to serialize the tasks that access that resource. 
-    - Improving on loop code:
-        - You can perform multiple iterations of the loop concurrently.
-        - `dispatch_apply` or `DispatchQueue.concurrentPerform(iterations: 10) { /* ... */ }`.
-    - Replacing thread joins.
-        - Thread joins allow you to spawn one or more threads and then have the current thread wait until those threads are finished.
-        - `DispatchGroup`.
-    - Replacing semaphore code.
-    - Replacing run-loop code.
+- Queues advantages - queues are **easier to think about** than threads:
+    - We **don't care how** some **code runs** on the CPU.
+    - We **care about the order**: (serially) or not (concurrently). 
+    - A lot of the time we don't even create the queue – we use **built-in queues**.
 
 ## Dispatch Queues <a name="dispatch_queues"></a>
 
 - iOS implementation of the Dispatch Queues is **Grand Central Dispatch** (GCD).
-- Advantage: it's easier to think in Dispatch Queues than threads:
-    - Instead of thinking in threads, you consider concurrent programming. as blocks of work pushed onto different queues.
 - There are different types of queues: 
-    - The main queue, which executes on the main thread and 
-    - The custom queues, which does not execute on the background.
-- There are different types of dispatch queues. 
-    - Serial queues: tasks executed in the same order as it was added to the queue. 
-    - Concurrent queues: tasks executed concurrently within this queue.
+    - **The main queue**, which executes on the main thread and 
+    - The **custom queues**, which execute on the background.
+- Dispatch queue types. 
+    - **Serial** queues: tasks executed in the same order as it was added to the queue. 
+    - **Concurrent** queues: tasks executed concurrently within this queue.
+- Dispatch queue task can be run:
+    - **Synchronously** - blocks the current thread until it has completed
+    - **Asynchronously** - returns immediately.
 
 ```swift
 DispatchQueue.main.async {
@@ -149,3 +168,4 @@ operation2.addDependency(operation1) //execute operation1 before operation2
 - [Migrating Away from Threads - Threading Programming Guide](https://developer.apple.com/library/archive/documentation/General/Conceptual/ConcurrencyProgrammingGuide/ThreadMigration/ThreadMigration.html#//apple_ref/doc/uid/TP40008091-CH105-SW1)
 - [What is the difference between concurrency, parallelism and asynchronous methods? - Stack Overflow](https://stackoverflow.com/questions/4844637/what-is-the-difference-between-concurrency-parallelism-and-asynchronous-methods#comment5379841_4844774)
 - [Concurrency vs Parallelism: 2 sides of same Coin?](https://www.linkedin.com/pulse/concurrency-vs-parallelism-2-sides-same-coin-khaja-shaik-/)
+- [Understanding threads and queues](https://www.hackingwithswift.com/quick-start/concurrency/understanding-threads-and-queues)
