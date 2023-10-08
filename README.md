@@ -9,12 +9,14 @@ I also encourage contributions from the iOS developer community to turn this rep
 # Table of Contents
 
 1. <a href="Methods/Methods.md">Methods in Swift</a>
+1. <a href="Initializers/Initializers.md">Initializers in Swift</a>
 1. <a href="Method Dispatch in Swift/Method Dispatch in Swift.md">Method Dispatch in Swift</a>
 1. <a href="struct vs class vs actor/struct vs class vs actor.md">`struct` vs `class` vs `actor`</a>
 1. <a href="Concurrency in iOS/Concurrency in iOS.md">Concurrency in iOS</a>
 1. <a href="Swift Concurrency/Swift Concurrency.md">Swift Concurrency</a>
 
 # TODO
+- Initializers in Swift (default values, ...)
 - Basic Data Structures in Swift
 - Memory Management in Swift
 - Concurrency problems in Swift
