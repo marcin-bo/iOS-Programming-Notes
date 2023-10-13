@@ -11,7 +11,6 @@
         1. [Closure Captures a Value Type](#closure_with_value_type)
 1. [ARC - Automatic Reference Counting](#arc)
     1. [What Is ARC?](#what_is_arc)
-    1. [How Does ARC Work?](#arc_works)
     1. [Retain Cycles](#retain_cycles)
     1. [How To Avoid Retain Cycles](#avoid_retain_cycles)
 1. [Method Dispatch](#method_dispatch)
@@ -80,42 +79,52 @@
 
 ## What Is Automatic Reference Counting (ARC)? <a name="what_is_arc"></a>
 
-- Swift uses ARC for **memory management of reference types**.
-  - Memory management prevents retain cycles and memory leaks.
-- ARC operates during **compile time**.
-  - This contrasts with a **garbage collector**, which manages memory at **runtime**.
-- It counts the number of instances to reference types.
-- This tally helps determine when it's safe to deallocate a class instance.
-- In specific situations, ARC requires additional information to do its job, like the `weak` or `unowned` keywords.
+- What is ARC?
+    - ARC is a **memory management feature of reference types**.
+    - The goal of ARC is to **know which instances** (e.g. an instance of a class) **can be removed from memory**, to free up space.
+    - ARC only applies to **reference types**.
+- What are benefits of using ARC?
+    - Helps to avoid memory leaks.
+    - You can focus on writing code, not on the manual memory management.
+- When does ARC operate?
+    - ARC operates during **compile time**.
+    - This contrasts with a **garbage collector**, which manages memory at **runtime**.
+- How does ARC work?
+    - Every object in Swift has a property called **the retain count**.
+        - It represents the **number of owners** for a particular object.
+        - When the retain count is greater than zero, the object is kept in memory.
+        - When the retain count reaches zero, the object is removed from memory.
 
-## How Does ARC Work? <a name="arc_works"></a>
-
-1. Allocation of Memory
-- When you create a new class instance, ARC sets aside memory to store information about that instance. 
-- This memory includes details about the instance's type and its stored properties.
-
-2. Freeing Up Memory: 
-- When an instance is no longer needed, ARC releases the memory it occupied. 
-- This ensures that unused instances don't clog up memory space.
-
-3. Avoiding Crashes: 
-- If ARC were to free up memory while an instance is still being used, it could lead to crashes. 
-- So, ARC keeps track of how many references are pointing to each instance
-
-4. Strong References: 
-- When you assign an instance to a property, constant, or variable, it creates a strong reference. 
-- This reference ensures that the instance isn't deallocated as long as at least one strong reference to it exists.
+**Class vs Instance vs Object vs Reference**
+- Class: structure, a "template" that is used to create objects; a blueprint for a house design.
+- Object: all the houses built from that blueprint are objects of that class.
+- Instance: a given house is an instance.
+- Reference: an address of an instance.
 
 ## Retain Cycles <a name="retain_cycles"></a>
 
-- A retain cycle is if two class instances hold a strong reference to each other, such that each instance keeps the other alive.
-- It is common issue when dealing with parent-child relationships between classes.
+- A retain cycle is if two class instances hold a **strong reference to each other**, such that each instance keeps the other alive in memory.
+- It is common issue:
+    - When dealing with **parent-child relationships between classes** when two class instance properties hold a strong reference to each other. 
+    - When you assign an **escaping closure** to a property of a class instance, and the body of that closure **captures `self`**.
 
 ## How To Avoid Retain Cycles <a name="avoid_retain_cycles"></a>
 
-To avoid retain cycles use:
-- Weak references (`weak` keywords).
+To avoid retain cycles:
+
+1. In parent-child relationships between classes use:
+- Weak references (`weak` keywords) 
+    - Doesn't keep a strong hold on the instance if refers to.
+    - ARC sets weak reference to `nil` when the instance that it refers to is deallocated.
 - Unowned references (`unowned` keywords).
+    - Doesn't keep a strong hold on the instance if refers to.
+    - ARC does not set unowned reference to `nil` when the instance that it refers to is deallocated.
+    - Use an unowned reference only when you are sure that the reference always refers to an instance that has not been deallocated.
+    - If you try to access the value of an unowned reference after that instance has been deallocated, you’ll get a runtime error.
+
+2. In closures:
+- Use closure capture list.
+
 
 # Method Dispatch <a name="method_dispatch"></a>
 
@@ -140,3 +149,4 @@ More about Method Dispatch you can find <a href="../Method Dispatch in Swift/Met
 - [Automatic Reference Counting](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/)
 - [Structs, Classes, and Actors in iOS Interviews](https://holyswift.app/structs-classes-and-actors-in-ios-interviews/)
 - [Swift stack and heap understanding - Stackoverflow](https://stackoverflow.com/a/42453109/1136128)
+- [Automatic Reference Counting (ARC) in Swift](https://www.appypie.com/automatic-reference-counting-arc-swift)
