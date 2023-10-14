@@ -15,6 +15,9 @@ Explore Concurrency in iOS in this in-depth article.
         1. [Problem With Threads](#problem_with_threads)
         1. [Moving Away from Threads](#threads_go_away)
     1. [Dispatch Queues](#dispatch_queues)
+        1. [The Main Queue](#dispatch_main_queue)
+        1. [Serial Queues](#dispatch_serial_queues)
+        1. [Concurrent Queues](#dispatch_concurrent_queues)
     1. [Operation Queues](#operation_queues)
 1. [References](#references)
 
@@ -134,16 +137,51 @@ iOS provides different tools to use Concurrency.
     - **The main queue**, which executes on the main thread and 
     - The **custom queues**, which execute on the background.
 - Dispatch queue types. 
-    - **Serial** queues: tasks executed in the same order as it was added to the queue. 
-    - **Concurrent** queues: tasks executed concurrently within this queue.
+    - **Serial** queues: 
+        - Tasks executed in the same **order** as it was added to the queue.
+        - **One task at a time**:
+            - The task must finish before starting new task in the queue (the risk of a deadlock).
+    - **Concurrent** queues: 
+        - Tasks executed **concurrently** within this queue in **random order**.
+        - **Many tasks at a time**.
 - Dispatch queue task can be run:
     - **Synchronously** - blocks the current thread until it has completed
     - **Asynchronously** - returns immediately.
+
+#### The Main Queue <a name="dispatch_main_queue"></a>
 
 ```swift
 DispatchQueue.main.async {
     // execute async on main thread
 }
+```
+
+#### Serial Queues <a name="dispatch_serial_queues"></a>
+
+```swift
+// Serial queue
+let serialQueue = DispatchQueue(label: "serialQueue")
+serialQueue.async { /* ... */ }
+```
+
+#### Concurrent Queues <a name="dispatch_concurrent_queues"></a>
+
+```swift
+// Example 1: Concurrent queue
+let concurrentQueue = DispatchQueue(label: "concurrentQueue", attributes: .concurrent)
+concurrentQueue.async { /* ... */ }
+
+// Example 2: Concurrent queue, but sync execution
+// Although it's a concurrent queue, we explicitly specify the sync execution
+let concurrentQueue = DispatchQueue(label: "concurrentQueue", attributes: .concurrent)
+concurrentQueue.sync { print("started 1"); print("finished 1") } // 1
+concurrentQueue.sync { print("started 2"); print("finished 2") } // 2
+
+// The ouput:
+// started 1
+// finished 1
+// started 2
+// finished 2
 ```
 
 ## Operation Queues <a name="operation_queues"></a>
