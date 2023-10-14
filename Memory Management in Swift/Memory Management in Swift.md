@@ -96,10 +96,10 @@
         - When the retain count reaches zero, the object is removed from memory.
 
 **Class vs Instance vs Object vs Reference**
-- Class: structure, a "template" that is used to create objects; a blueprint for a house design.
-- Object: all the houses built from that blueprint are objects of that class.
-- Instance: a given house is an instance.
-- Reference: an address of an instance.
+- **Class**: structure, a "template" that is used to create objects; a blueprint for a house design.
+- **Object**: all the houses built from that blueprint are objects of that class.
+- **Instance**: a given house is an instance.
+- **Reference**: an address of an instance.
 
 ## Retain Cycles <a name="retain_cycles"></a>
 
@@ -115,12 +115,13 @@ To avoid retain cycles:
 1. In parent-child relationships between classes use:
 - Weak references (`weak` keywords) 
     - Doesn't keep a strong hold on the instance if refers to.
-    - ARC sets weak reference to `nil` when the instance that it refers to is deallocated.
+    - Are optional and become `nil` when the instance that it refers to is deallocated.
 - Unowned references (`unowned` keywords).
     - Doesn't keep a strong hold on the instance if refers to.
-    - ARC does not set unowned reference to `nil` when the instance that it refers to is deallocated.
+    - Are not optional and are always considered to have a non-`nil`.
+    - The other instance has a longer life time, the instance cannot become `nil`.
     - Use an unowned reference only when you are sure that the reference always refers to an instance that has not been deallocated.
-    - If you try to access the value of an unowned reference after that instance has been deallocated, you’ll get a runtime error.
+    - If you try to access the value of an unowned reference after that instance has been deallocated, you'll get a runtime error.
 
 2. In closures:
 - Use closure capture list.
