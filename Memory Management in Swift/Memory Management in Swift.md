@@ -79,17 +79,17 @@
 
 ## What Is Automatic Reference Counting (ARC)? <a name="what_is_arc"></a>
 
-- What is ARC?
+- **What is ARC?**
     - ARC is a **memory management feature of reference types**.
     - The goal of ARC is to **know which instances** (e.g. an instance of a class) **can be removed from memory**, to free up space.
     - ARC only applies to **reference types**.
-- What are benefits of using ARC?
+- **What are benefits of using ARC?**
     - Helps to avoid memory leaks.
     - You can focus on writing code, not on the manual memory management.
-- When does ARC operate?
+- **When does ARC operate?**
     - ARC operates during **compile time**.
     - This contrasts with a **garbage collector**, which manages memory at **runtime**.
-- How does ARC work?
+- **How does ARC work?**
     - Every object in Swift has a property called **the retain count**.
         - It represents the **number of owners** for a particular object.
         - When the retain count is greater than zero, the object is kept in memory.
