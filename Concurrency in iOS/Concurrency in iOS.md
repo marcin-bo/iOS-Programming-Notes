@@ -145,8 +145,8 @@ iOS provides different tools to use Concurrency.
         - Tasks executed **concurrently** within this queue in **random order**.
         - **Many tasks at a time**.
 - Dispatch queue task can be run:
-    - **Synchronously** - blocks the current thread until it has completed
-    - **Asynchronously** - returns immediately.
+    - **Synchronously** - blocks the execution until the task is completed
+    - **Asynchronously** - does not block the execution, returns immediately.
 
 #### The Main Queue <a name="dispatch_main_queue"></a>
 
@@ -177,7 +177,7 @@ let concurrentQueue = DispatchQueue(label: "concurrentQueue", attributes: .concu
 concurrentQueue.sync { print("started 1"); print("finished 1") } // 1
 concurrentQueue.sync { print("started 2"); print("finished 2") } // 2
 
-// The ouput:
+// The output:
 // started 1
 // finished 1
 // started 2
