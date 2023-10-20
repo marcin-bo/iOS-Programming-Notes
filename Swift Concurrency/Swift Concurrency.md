@@ -22,7 +22,7 @@ Explore the power of Swift Concurrency in this in-depth article. Learn how to ha
     1. [Error handling using `try await`](#error_handling)
     1. [Async getters: `get async throws`](#async_getters)
     1. [Task](#task)
-        1. [Creating tasks that inherit context, taks values, etc.](#task_init)
+        1. [Creating tasks that inherit context, task values, etc.](#task_init)
         1. [Creating tasks that are detached (independent)](#task_init_detached)
     1. [Cancellation](#cancellation)
         1. [`try Task.checkCancellation`](#cancellation_check_cancellation)
@@ -215,7 +215,7 @@ It simplifies code with Dispatch Groups from <a href="#fetch_multiple_resource_c
 
 <img src="images/task value.jpg" width="500"/>
 
-### Creating tasks that inherit context, taks values, etc. <a name="task_init"></a>
+### Creating tasks that inherit context, task values, etc. <a name="task_init"></a>
 
 <img src="images/task init.jpg" width="500"/>
 
