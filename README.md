@@ -17,6 +17,8 @@ I also encourage contributions from the iOS developer community to turn this rep
     1. <a href="Dispatch Queues/Dispatch Queues.md">Dispatch Queues</a>
 1. <a href="Concurrency Problems/Concurrency Problems.md">Concurrency Problems</a>
 1. <a href="Swift Concurrency/Swift Concurrency.md">Swift Concurrency</a>
+1. Architectures:
+    1. <a href="Architectures/Clean Architecture/Clean Architecture.md">Clean Architecture</a>
 
 # TODO
 - Basic Data Structures in Swift
