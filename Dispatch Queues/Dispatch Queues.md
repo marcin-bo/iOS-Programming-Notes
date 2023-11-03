@@ -119,7 +119,7 @@ func doAsyncTaskInSerialQueue() {
             serialQueue.async {
             if Thread.isMainThread{
                 print("task running in main thread")
-            }else{
+            } else {
                 print("task running in other thread")
             }
             let imageURL = URL(string: "https://upload.wikimedia.org/wikipedia/commons/0/07/Huge_ball_at_Vilnius_center.jpg")!
@@ -173,7 +173,7 @@ func doSyncTaskInSerialQueue() {
             serialQueue.sync {
             if Thread.isMainThread{
                 print("task running in main thread")
-            }else{
+            } else {
                 print("task running in other thread")
             }
             let imageURL = URL(string: "https://upload.wikimedia.org/wikipedia/commons/0/07/Huge_ball_at_Vilnius_center.jpg")!
@@ -232,7 +232,7 @@ func doAsyncTaskInConcurrentQueue() {
             concurrentQueue.async {
             if Thread.isMainThread{
                 print("task running in main thread")
-            }else{
+            } else {
                 print("task running in other thread")
             }
             let imageURL = URL(string: "https://upload.wikimedia.org/wikipedia/commons/0/07/Huge_ball_at_Vilnius_center.jpg")!
@@ -292,7 +292,7 @@ func doSyncTaskInConcurrentQueueQueue() {
             concurrentQueue.sync {
             if Thread.isMainThread{
                 print("task running in main thread")
-            }else{
+            } else {
                 print("task running in other thread")
             }
             let imageURL = URL(string: "https://upload.wikimedia.org/wikipedia/commons/0/07/Huge_ball_at_Vilnius_center.jpg")!
