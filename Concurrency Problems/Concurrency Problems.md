@@ -91,7 +91,7 @@ How to prevent getting a deadlock?
 - A livelock is similar to a deadlock.
 
 Example:
-- A real-world example of livelock occurs when two people meet in a narrow corridor, and each tries to be polite by moving aside to let the other pass, but they end up swaying from side to side without making any progress because they both repeatedly move the same way at the same time.
+- A real-world example of livelock occurs when two people meet in a narrow corridor, and each tries to be polite by moving aside to let the other pass, but they end up swaping from side to side without making any progress because they both repeatedly move the same way at the same time.
 
 # Race Condition <a name="race_condition"></a>
 
