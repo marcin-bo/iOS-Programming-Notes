@@ -22,11 +22,14 @@
         1. [Using `URLSession.dataTask` and `UIImage(data:)`](#download_image_2)  
 1. [JSON Handling](#json_handling)
     1. [Serializing Dictionary to `Data`](#json_serialize)
+        1. [Using `JSONEncoder`](#json_serialize_1)
+        1. [Using `JSONSerialization`](#json_serialize_2)
     1. [Deserializing `Data` to Dictionary](#json_deserialize)
-    1. [JSON Encoding](#json_encode)
-    1. [JSON Decoding](#json_decode)
+        1. [Using `JSONDecoder`](#json_deserialize_1)
+        1. [Using `JSONSerialization`](#json_deserialize_2)
+    1. [JSON Encoding Using `Encodable`](#json_encode)
+    1. [JSON Decoding Using `Decodable`](#json_decode)
     1. [Custom JSON Encoding And Decoding](#custom_json)
-
 
 # Networking <a name="networking"></a>
 
@@ -272,19 +275,44 @@ dataTask.cancel()
 
 ## Serializing Dictionary to `Data` <a name="json_serialize"></a>
 
+### Using `JSONEncoder` <a name="json_serialize_1"></a>
 ```swift
-let jsonObject = ["name": "iPhone"]
-let data = try? JSONSerialization.data(withJSONObject: jsonObject, options: [])
+let dictionary = ["name": "iPhone"]
+
+let data = try JSONEncoder().encode(dictionary)
+print(String(data: data, encoding: .utf8)!) 
+```
+
+### Using `JSONSerialization` <a name="json_serialize_2"></a>
+
+```swift
+let dictionary = ["name": "iPhone"]
+
+let data = try JSONSerialization.data(withJSONObject: dictionary, options: [.prettyPrinted])
+print(String(data: data, encoding: .utf8)!) 
 ```
 
 ## Deserializing `Data` to Dictionary <a name="json_deserialize"></a>
 
+### Using `JSONDecoder` <a name="json_deserialize_1"></a>
+
 ```swift
-let jsonResponse = try? JSONSerialization.jsonObject(with: responseData, options: .mutableContainers) as? [String: Any]
-print(jsonResponse)
+let data: Data = "{\"name\": \"iPhone\"}".data(using: .utf8)!
+
+let dictionary = try JSONDecoder().decode([String: String].self, from: data)
+print(dictionary)
 ```
 
-## JSON Encoding <a name="json_encode"></a>
+### Using `JSONSerialization` <a name="json_deserialize_2"></a>
+
+```swift
+let data: Data = "{\"name\": \"iPhone\"}".data(using: .utf8)!
+
+let dictionary = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any]
+print(dictionary)
+```
+
+## JSON Encoding Using `Encodable` <a name="json_encode"></a>
 
 ```swift
 struct Product: Encodable {
@@ -305,7 +333,7 @@ do {
 }
 ```
 
-## JSON Decoding <a name="json_decode"></a>
+## JSON Decoding Using `Decodable` <a name="json_decode"></a>
 
 ```swift
 struct Product: Decodable {
