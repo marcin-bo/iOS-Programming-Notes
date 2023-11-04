@@ -19,6 +19,7 @@ I also encourage contributions from the iOS developer community to turn this rep
 1. <a href="Swift Concurrency/Swift Concurrency.md">Swift Concurrency</a>
 1. Architectures:
     1. <a href="Architectures/Clean Architecture/Clean Architecture.md">Clean Architecture</a>
+1. <a href="Useful Swift Code Snippets/Useful Swift Code Snippets.md">Useful Code Snippets</a>
 
 # TODO
 - Basic Data Structures in Swift
