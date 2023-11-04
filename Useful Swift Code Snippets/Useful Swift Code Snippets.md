@@ -140,12 +140,12 @@ dataTask.cancel()
 ### Using Swift Concurrency <a name="send_urlrequest_2"></a>
 
 ```swift
-// 1. Create URLRequest
-let request = URLRequest(url: "https://www.example.com/path")
-
-// 2. Create Task
+// 1. Create Task
 let task: Task<Void, Never> = Task {
     do {
+        // 2. Create URLRequest
+        let request = URLRequest(url: "https://www.example.com/path")
+        
         let (data, _) = try await URLSession.shared.data(for: request)
         
         // Parse JSON data
