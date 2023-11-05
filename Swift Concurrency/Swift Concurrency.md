@@ -133,6 +133,22 @@ Swift Concurrency uses a **Cooperative Thread Pool** model:
     - Helps to avoid **Thread Explosion** by limiting the number of threads per queue so that they don't exceed the number of CPU cores.
     - Avoid the overhead and performance penalty of **thread switching** (`Continuation`).
 
+## Swift Concurrency vs GCD <a name="swift_concurrency_vs_gcd"></a>
+
+- Swift Concurrency is not built on top of GCD. 
+- Swift Concurrency was designed to be more efficient than GCD.
+- It's a whole **new thread pool** (Cooperative Thread Pool).
+- Swift's `await` does not block a thread like GCD's `sync` does.
+- **Problems with GCD**:
+    - Working with GCD may result in **Thread Explosion**.
+    - Thread Explosion can lead to **memory and performance issues**.
+    - Thread Explosion in GCD:
+        - In some scenarios GCD is very eager to **create new threads** to handle work.
+        - This can result in having **more threads** than **CPU cores**.
+    - Thread Explosion in GCD might occur when:
+        - **Too many blocking tasks** are added to the global **concurrent** queue or private concurrent queues.
+        - **Too many private concurrent queues** exist that all consume thread resources.
+
 ## How does `async`/`await` work? <a name="async_await_working"></a>
 
 **Marking a function as `async`:**
@@ -626,3 +642,5 @@ await withCheckedContinuation { continuation in
 - [Global Actors in Swift (2022) – iOS](https://www.youtube.com/watch?v=CU_FfeTuQXs)
 - [Discover how Actors work in less than 90 seconds](https://www.youtube.com/watch?v=v8qE5YK5-aI)
 - [MainActor usage in Swift explained to dispatch to the main thread](https://www.avanderlee.com/swift/mainactor-dispatch-main-thread/)
+- [Swift concurrency: Behind the scenes](https://developer.apple.com/videos/play/wwdc2021/10254/)
+- [WWDC Notes: Swift concurrency: Behind the scenes](https://www.donnywals.com/wwdc-notes-swift-concurrency-behind-the-scenes/)
