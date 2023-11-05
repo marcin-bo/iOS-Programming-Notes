@@ -542,6 +542,8 @@ func fetchImage(for url: URL) async throws -> UIImage {
     return image
 }
 ```
+- The network request is performed on the background queue. 
+- The @MainActor attribute ensures the logic executes on the main thread.
 
 # `@globalActor` <a name="global_actor"></a>
 
