@@ -13,7 +13,7 @@
 1. [Data Races](#data_races)
     1. [Examples](#data_race_examples)
     1. [How To Prevent From Getting a Data Race?](#data_race_prevent)
-1. [Excessive Thread Creation (Thread Explosion)](#thread_creation)
+1. [Thread Explosion, Excessive Thread Creation](#thread_creation)
 1. [Thread Starvation](#thread_starvation)
 1. [References](#references)
 
@@ -234,22 +234,20 @@ queueTwo.async {
 } 
 ```
 
-# Excessive Thread Creation (Thread Explosion) <a name="thread_creation"></a>
+# Thread Explosion, Excessive Thread Creation <a name="thread_creation"></a>
 
-It might be tempting to create a lot of queues to gain better performance in your app. 
-
-```swift
-// Creating a lot of concurrent queues, one thread for each queue
-let concurrentQueue1 = DispatchQueue(label: "concurrentQueue1", attributes: .concurrent)
-concurrentQueue1.async { /* Perform a task */ }
-
-let concurrentQueue2 = DispatchQueue(label: "concurrentQueue2", attributes: .concurrent)
-concurrentQueue2.async { /* Perform a task */ }
-
-/* ... */
-```
+- Working with GCD may result in **Thread Explosion**.
+- Thread Explosion can lead to **memory and performance issues**.
+- Thread Explosion in GCD:
+    - In some scenarios GCD is very eager to **create new threads** to handle work.
+    - This can result in having **more threads** than **CPU cores**.
+- Thread Explosion in GCD might occur when:
+    - **Too many blocking tasks** are added to the global **concurrent** queue or private concurrent queues.
+    - **Too many private concurrent queues** exist that all consume thread resources.
 
 ```swift
+// Thread Explosion example 1: too many blocking tasks.
+
 // The code below will spawn a total of 150 threads, causing thread explosion to occur
 
 final class HeavyWork {
@@ -265,10 +263,17 @@ for _ in 1...150 {
 }
 ```
 
-Unfortunately, creating threads comes with a cost and you should, therefore, avoid excessive thread creation. 
-- Too many blocking tasks are added to concurrent queues forcing the system to create additional threads until the system runs out of threads for your app.
-- Too many private concurrent dispatch queues exist that all consume thread resources.
-- Too many blocking tasks added to the global concurrent queue.
+```swift
+// Thread Explosion example 2: creating a lot of concurrent queues, one thread for each queue
+
+let concurrentQueue1 = DispatchQueue(label: "concurrentQueue1", attributes: .concurrent)
+concurrentQueue1.async { /* Perform a task */ }
+
+let concurrentQueue2 = DispatchQueue(label: "concurrentQueue2", attributes: .concurrent)
+concurrentQueue2.async { /* Perform a task */ }
+
+/* ... */
+```
 
 ## How To Prevent From Excessive Thread Creation? <a name="thread_creation_prevent"></a>
 
