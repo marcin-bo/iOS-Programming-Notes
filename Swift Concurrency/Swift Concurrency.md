@@ -44,6 +44,7 @@ Explore the power of Swift Concurrency in this in-depth article. Learn how to ha
     1. [Actors definition](#actors_definition)
     1. [Example: shared mutable state with and without an actor](#actors_example)
     1. [`@MainActor`](#main_actor)
+    1. [`@globalActor`](#global_actor)
 1. [Using `async/await` in Existing Code Bases](#async_await_in_code_bases)
     1. [Create `async/await` Functions by Wrapping Closure-based Functions and Reusing Them](#async_await_wrapping_closures) 
     1. [Objective-C Interoperability](#objective_c)
@@ -385,7 +386,7 @@ With keeping track of different tasks:
 - Actors provide **isolation** from the rest of the program for its **shared mutable state**.
     - The only way to access that state is by going through the actor.
 - Whenever you **interact with an actor** from the outside, you must access the data **asynchronously**.
-    - Use `await` before a function call.
+    - Use `await` before a method call or access to a property.
 - Actors **eliminates data races** on the actor's state.
 
 ## Example: shared mutable state with and without an actor <a name="actors_example"></a>
@@ -396,13 +397,50 @@ With keeping track of different tasks:
 
 **With an actor:**
 
+When calling a method from an actor you need to:
+- Wrap the call in a `Task`.
+- Use `await` since all method in an actor are asynchronous.
+
 <img src="images/shared mutable state with actor.jpg" width="750"/>
+
+## Example: image cache data race
+
+**1. Let's consider the following example.**
+
+<img src="images/example_actor_1.jpg" width="650"/>
+
+As long as our call are happening on a single thread of execution, everything is working fine.
+
+**2. Let's introduce a bit of concurrency.**
+
+<img src="images/example_actor_2.jpg" width="650"/>
+
+Our image cache is affected by a data race: both tasks mutate the internal dictionary at the same time.
+
+**3. The first way we can protect against such data races is using a serial queue.**
+
+<img src="images/example_actor_3.jpg" width="650"/>
+
+- Add a serial queue.
+- Synchronize all read and write accesses to the internal state through this serial queue.
+- Downsides: it adds complexity: reading data has to be done through a completion handler.
+
+**4. Another approach: let's use `actor`**
+
+<img src="images/example_actor_4.jpg" width="650"/>
+
+- All method call now will be automatically synchronized so that they are executed one at a time.
+- It makes a type thread safe ensuring all methods and property call happen one at a time. 
 
 ## `@MainActor` <a name="main_actor"></a>
 
-- It represents the Main Thread.
-- `MainActor.run` = `DispatchQueue.main.async`
-- You can annotate classes and functions with `@MainActor` to make sure they always run on the Main Thread.
+- It's a property wrapper.
+- It's an example of a global actor (it conforms to the `GlobalActor` protocol).
+- It performs his tasks on the Main Thread:
+    - `MainActor.run` = `DispatchQueue.main.async`
+- `@MainActor` will only have an effect in asynchronous code that uses Swift concurrency.
+    - If your code uses completion handlers or Combine then `@MainActor` will have no effect.
+- You can annotate types, methods, properties, closures with `@MainActor`.
     - It's common for a view models or a view controller.
     - You can opt-out specific methods so they don't run on the main actor by marking them as `nonisolated`.
 
@@ -410,22 +448,147 @@ With keeping track of different tasks:
 
 <img src="images/main actor.jpg" width="500"/>
 
+```swift
+// On types
+@MainActor
+class ViewModel {
+    /* ... */
+}
+
+// On functions
+@MainActor
+func updateUI {
+    /* ... */ 
+}
+
+// In closures 1
+Task { @MainActor in
+    /* ... */ 
+}
+
+// In closures 2
+func updateData(completion: @MainActor @escaping () -> ()) {
+    Task {
+        await someHeavyBackgroundOperation()
+        await completion()
+    }
+}
+// Although in this case, you should rewrite the updateData method to an async variant without needing a completion closure. 
+```
+
+Example:
+
+```swift
+@MainActor
+class ViewModel: ObservableObject {
+    @Published var text = ""
+    
+    func updateText() {
+        Task {
+            let newText = await fetchFromNetwork()
+            
+            // Guaranteed to run on the Main Thread
+            text = newText
+        }
+    }
+    
+    func updateText2() {
+        fetchFromNetwork2 { [weak self] in
+            // ❗ @MainActor has no effect here
+            self?.text = newText
+        }
+    }
+}
+```
+
+## Using The Main Actor Directly
+
+- You can use MainActor directly from within methods.
+- However, it's safer to user `@MainActor` attribute since you might forget to call `MainActor.run`.
+```swift
+Task {
+    let result = await someHeavyBackgroundOperation()
+    await MainActor.run {
+        // Perform UI updates
+    }
+}
+```
+
+## Main Actor Example: Download Image from URL
+
+```swift
+@MainActor
+func fetchImage(for url: URL) async throws -> UIImage {
+    let (data, _) = try await URLSession.shared.data(from: url)
+    guard let image = UIImage(data: data) else {
+        throw ImageFetchingError.imageDecodingFailed
+    }
+    return image
+}
+```
+
+# `@globalActor` <a name="global_actor"></a>
+
+- You can see Global Actors as singletons: only one instance exists.
+
+```swift
+@globalActor
+actor SomeGlobalActor {
+    static var shared = SomeGlobalActor()
+}
+
+@SomeGlobalActor
+final class SomeFetcher {
+    // ..
+}
+```
+
 # Using `async/await` in Existing Code Bases <a name="async_await_in_code_bases"></a>
 - Deployment Target = iOS 13 (built into SDK iOS 15, back-deployed in older iOS versions).
 
 ## Create `async/await` Functions by Wrapping Closure-based Functions and Reusing Them <a name="async_await_wrapping_closures"></a>
 
-Given a closure-based function you can wrap it as an async function.
-- You can create your won `Continuation` by using these built-in functions:
-    - `await withCheckedContinuation { continuation in /* ... */ }`
-    - `try await withCheckedThrowingContinuation  { continuation in /* ... */ }`
-    - `await withUnsafeContinuation { continuation in /* ... */ }`
-    - `try await withUnsafeThrowingContinuation { continuation in /* ... */ }`
-- Warning: you mustn't resume the continuation more than once. It results in unpredictable behavior.
+Given a closure-based function you can wrap it as an async function:
+
+```swift
+await withUnsafeContinuation { continuation in
+    legacyAsyncFunction { result in
+        continuation.resume(returning: result)
+    }
+}
+
+await withCheckedContinuation { continuation in
+    legacyAsyncFunction { result in
+        continuation.resume(returning: result)
+    }
+}
+```
+
+- You can create your own `Continuation` by using these built-in functions:
+    - `await withCheckedContinuation` + `try await withCheckedThrowingContinuation`
+    - `await withUnsafeContinuation` + `try await withUnsafeThrowingContinuation`
+- What is `Continuation`?
+    - An opaque representation of the state of our application.
+    - Warning ⚠️: Must be called exactly once.
+        - `withCheckedContinuation` and `withCheckedThrowingContinuation` provide extra safety.
+        - Adds runtime checks to detect any improper use of the continuation and warns if it were to happen.
+        - `withUnsafeContinuation` and `withUnsafeThrowingContinuation` perform none of these checks.
+        - What if you violate this rule?
+            - No continuation call 
+                - Our program will awaits forever.
+                - However, `withChecked*` calls - we get a warning in the console.
+            - Calling the continuation more than once:
+                - `withUnsafe*` result in undefined bevaviour.
+                - `withChecked*` crash explicitly.
+- `withChecked*` vs `withUnsafe*`
+    - `withChecked*` has additional checks that come with small cost.
+    - In some performance-heavy situations, it makes sense to disable them.
+    - However, in most cases you will be using `withChecked*`.
 
 <img src="images/async await wrapping closures 1.jpg" width="600"/>
 
 <img src="images/async await wrapping closures 2.jpg" width="600"/>
+
 
 ## Objective-C Interoperability <a name="objective_c"></a>
 
@@ -449,7 +612,6 @@ Given a closure-based function you can wrap it as an async function.
 
 # TODO <a name="todo"></a>
 - @Sendable
-- @globalActor
 - @preconcurrency
 - nonisolated
 - Using Thread Sanitizer with Actors
@@ -460,3 +622,7 @@ Given a closure-based function you can wrap it as an async function.
 - [A crash course of async await (Swift Concurrency) - Shai Mishali - Swift Heroes 2022](https://www.youtube.com/watch?v=uWqy5KZXSlA)
 - [Swift Concurrency by Example](https://www.hackingwithswift.com/quick-start/concurrency)
 - [WWDC Swift Notes - Protect mutable state with Swift actors](https://www.wwdcnotes.com/notes/wwdc21/10133/)
+- [Discover how @MainActor works in less than 90 seconds](https://www.youtube.com/watch?v=pM2ZhOYPuDA)
+- [Global Actors in Swift (2022) – iOS](https://www.youtube.com/watch?v=CU_FfeTuQXs)
+- [Discover how Actors work in less than 90 seconds](https://www.youtube.com/watch?v=v8qE5YK5-aI)
+- [MainActor usage in Swift explained to dispatch to the main thread](https://www.avanderlee.com/swift/mainactor-dispatch-main-thread/)
