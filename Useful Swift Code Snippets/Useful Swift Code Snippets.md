@@ -19,7 +19,8 @@
     1. [Example of Handling URL Response](#url_response_handling)
     1. [Download an Image From URL](#download_image)
         1. [Using `Data(contentsOf:)` and `UIImage(data:)`](#download_image_1)
-        1. [Using `URLSession.dataTask` and `UIImage(data:)`](#download_image_2)  
+        1. [Using `URLSession.dataTask` and `UIImage(data:)`](#download_image_2)
+        1. [Using `URLSession.dataTask`, `UIImage(data:)` and Swift Concurrency](#download_image_3)
 1. [JSON Handling](#json_handling)
     1. [Serializing Dictionary to `Data`](#json_serialize)
         1. [Using `JSONEncoder`](#json_serialize_1)
@@ -269,6 +270,19 @@ dataTask.resume()
 
 // 4. [Optional] You can cancel the request if needed at any time
 dataTask.cancel()
+```
+
+### Using `URLSession.dataTask`, `UIImage(data:)` and Swift Concurrency <a name="download_image_3"></a>
+
+```swift
+@MainActor
+func fetchImage(from url: URL) async throws -> UIImage {
+    let (data, _) = try await URLSession.shared.data(from: url)
+    guard let image = UIImage(data: data) else {
+        throw FetchImageError.decodingFailed
+    }
+    return image
+}
 ```
 
 # JSON Handling <a name="json_handling"></a>
