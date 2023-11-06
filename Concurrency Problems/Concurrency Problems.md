@@ -172,10 +172,12 @@ func updateName() {
 ## How To Prevent From Getting a Data Race? <a name="data_race_prevent"></a>
 
 - Leverage synchronization mechanisms in shared mutable state:
-    - Atomics.
-    - Locks (`NSLock`, `NSRecursiveLock`, `os_unfair_lock`, `Mutex`).
     - Serial dispatch queues
         - Perform operations on a serial queue asynchronously.
+    - Concurrent queue with barrier
+    - Atomics.
+    - Locks (`NSLock`, `NSRecursiveLock`, `os_unfair_lock`, `Mutex`).
+    
         
 ```swift
 private let lockQueue = DispatchQueue(label: "serialQueue")
