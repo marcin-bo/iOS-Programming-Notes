@@ -91,27 +91,22 @@ var result3: Int?
 /* ... */
 
 group.enter()
-repository.fetch1 { result1 in
+repository.fetch1 { fetchedResult1 in
     defer { group.leave() }
-    
-    // Do something with result1
-    result1 = result1
+    result1 = fetchedResult1
 }
 
 
 group.enter()
-repository.fetch2 { result2 in
+repository.fetch2 { fetchedResult2 in
     defer { group.leave() }
-    
-    // Do something with result2
-    result2 = result2
+    result2 = fetchedResult2
 }
 
 
 group.enter()
-repository.fetch3 { result3 in
-    // Do something with result3
-    result3 = result3
+repository.fetch3 { fetchedResult3 in
+    result3 = fetchedResult3
 }
 
 group.notify(queue: DispatchQueue.main) { [weak self] in
