@@ -2,10 +2,9 @@
 
 # Table of Contents
 
-1. [Dispatch Queues](#dispatch_queues)
-    1. [The Main Queue](#dispatch_main_queue)
-    1. [Global Concurrent Queues](#global_concurrent_queues)
-    1. [Custom Queues](#custom_queues)
+1. [The Main Queue](#dispatch_main_queue)
+1. [Global Concurrent Queues](#global_concurrent_queues)
+1. [Custom Queues](#custom_queues)
 1. [Examples](#examples)
     1. [Serial Queue Executing Task Asynchronously](#example_1)
     1. [Serial Queue Executing Task Synchronously](#example_2)
@@ -13,18 +12,14 @@
     1. [Concurrent Queue Executing Task Synchronously](#example_4)
 1. [References](#references)
 
-# Dispatch Queues <a name="dispatch_queues"></a>
-
-- The Main Queue
-- Global Concurrent Queues
-- Custom Queues
 
 # The Main Queue <a name="dispatch_main_queue"></a>
 
 - System provided.
-- Serial.
-- Use Main Thread.
+- **Serial**.
+- Use the Main Thread.
 - UI is tied to the Main Thread, UI related operations must be performed on the Main Queue.
+    - Why? To ensure thread safety and proper synchronization.
 - Note: Main Queue is bound to Main Thread. Main Thread is NOT bound to Main Queue.
 
 ```swift
@@ -36,17 +31,21 @@ DispatchQueue.main.async {
 # Global Concurrent Queues <a name="global_concurrent_queues"></a>
 
 - System provided.
-- Concurent.
+- **Concurent**.
 - Do not use Main Thread (with one exception).
-    - Task may run in the main thread when you use sync in GCD.
-- Priorities are decided through QoS:
-    - User-interactive - UI update, animations.
-    - User-initiated - immediate results, data required for seamless user experience.
-    - Default - falls between user-initiated and utility.
-    - Utility - long running tasks, user is aware of the progress (there is a progress bar visible to the user).
-    - Background - not visible to user, user is not aware of the task (prefetching, backup).
-    - Unspecified - the lowest priority.
-    
+    - However, the task may run in the main thread when you use sync in GCD.
+        - When the system determines that there are no available threads to handle the task on the global queue.
+        - When the task submitted to the global queue is very small and quick to execute.
+        - To avoid that, use `DispatchQueue.global(qos: .background)`. This results in running the task on a background thread.
+- Priorities are decided through QoS (4 main types, two special types):
+    - **User-interactive** - UI updates, immediate results.
+    - **User-initiated** - initiated by a user, when the user is waiting for results, data required for seamless user experience.
+    - **Default** (special type of QoS) - falls between user-initiated and utility.
+    - **Utility** - long running tasks, user is aware of the progress (there is a progress bar visible to the user).
+    - **Background** - not visible to user, user is not aware of the task (prefetching, backup, maintenance).
+    - **Unspecified** (special type of QoS) - the lowest priority.
+- Optimally, use QoS level of utility or lower at least 90% of the time when user activity is not occurring.
+
 ```swift
 DispatchQueue.global().async { }
 
@@ -55,7 +54,7 @@ DispatchQueue.global(qos: .userInteractive).async { }
     
 # Custom Queues <a name="custom_queues"></a>
 
-- Serial or concurrent.
+- **Serial or concurrent**.
 - Parameters when creating a custom queue:
     - Attributes (a single attribute or an array):
         - `concurrent` - a concurrent queue, by default it;s a serial queue.
@@ -64,18 +63,24 @@ DispatchQueue.global(qos: .userInteractive).async { }
         - A queue that the custom queue will use behind the scenes.
         - The priority is inherited from its target queue.
         - By default default priority global queue is target queue.
+        - Setting a target on an activated queue will compile but then throw an error in runtime. You can do it for `initiallyInactive` queue.
     - Auto Release Frequency
         - `inherit` - inherit from target queue, default behaviour.
         - `workItem` - individual auto release pool.
         - `never` - never setup an individual auto release pool.
 
-Initializers:
 ```swift
-init("queueName")
-init("queueName", attributes: ...)
-init("queueName", qos: .., attributes: ..., autoReleaseFrequency: ..., target: ...)
+// Initializers
+DispatchQueue.init(label: "queueName")
+DispatchQueue.init(label: "queueName", attributes: ...)
+DispatchQueue.init(label: "queueName", qos: .., attributes: ..., autoReleaseFrequency: ..., target: ...)
 ```
 
+// Setting target queue for initiallyInactive
+let serialQueue = DispatchQueue(label: "serialQueue")
+let concurrentQueue = DispatchQueue(label: "concurrentQueue", attributes: [.initiallyInactive, .concurrent])
+concurrentQueue.setTarget(queue: serialQueue)
+concurrentQueue.activate()
 
 ```swift
 
