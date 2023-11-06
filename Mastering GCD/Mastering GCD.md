@@ -1,4 +1,4 @@
-# Advanced Grand Central Dispatch
+# Mastering Grand Central Dispatch
 
 # Table of Contents
 
