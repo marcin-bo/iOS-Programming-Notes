@@ -13,7 +13,7 @@ I also encourage contributions from the iOS developer community to turn this rep
 1. <a href="Method Dispatch in Swift/Method Dispatch in Swift.md">Method Dispatch in Swift</a>
 1. <a href="Memory Management in Swift/Memory Management in Swift.md">Memory Management in Swift</a>
 1. <a href="struct vs class vs actor/struct vs class vs actor.md">`struct` vs `class` vs `actor`</a>
-1. <a href="Concurrency in iOS/Concurrency in iOS.md">Concurrency in iOS</a>
+1. <a href="Concurrency in Swift/Concurrency in Swift.md">Concurrency in Swift</a>
     1. <a href="Dispatch Queues/Dispatch Queues.md">Dispatch Queues</a>
     1. <a href="GCD Advanced/GCD Advanced.md">Advanced Grand Central Dispatch</a>
 1. <a href="Concurrency Problems/Concurrency Problems.md">Concurrency Problems</a>

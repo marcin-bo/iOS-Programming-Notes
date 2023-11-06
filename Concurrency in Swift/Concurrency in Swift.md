@@ -1,6 +1,6 @@
-# Concurrency in iOS
+# Concurrency in Swift
 
-Explore Concurrency in iOS in this in-depth article.
+Explore Concurrency in Swift in this in-depth article.
 
 # Table of Contents
 
