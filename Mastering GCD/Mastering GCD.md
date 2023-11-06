@@ -2,7 +2,7 @@
 
 # Table of Contents
 
-1. [DispatchWorkItem](#dispatchworkitem)
+1. [`DispatchWorkItem`](#dispatchworkitem)
 1. [Dispatch Barriers](#dispatch_bariers)
 1. [Dispatch Groups](#dispatch_groups)
     1. [Fetching and Updating Multiple Resources Using Closures In Parallel](#dispatch_groups_closures)
