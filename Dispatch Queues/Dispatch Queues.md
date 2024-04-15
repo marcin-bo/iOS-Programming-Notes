@@ -76,11 +76,13 @@ DispatchQueue.init(label: "queueName", attributes: ...)
 DispatchQueue.init(label: "queueName", qos: .., attributes: ..., autoReleaseFrequency: ..., target: ...)
 ```
 
+```swift
 // Setting target queue for initiallyInactive
 let serialQueue = DispatchQueue(label: "serialQueue")
 let concurrentQueue = DispatchQueue(label: "concurrentQueue", attributes: [.initiallyInactive, .concurrent])
 concurrentQueue.setTarget(queue: serialQueue)
 concurrentQueue.activate()
+```
 
 ```swift
 
