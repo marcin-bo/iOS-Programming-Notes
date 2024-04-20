@@ -237,7 +237,7 @@ Swift provides different tools to use Concurrency:
 ### Examples
 
 ```swift
-// 1. Custom subclass of Operation:
+// 1. Custom subclass of Operation
 final class ImportOperation: Operation {
 
     let repositoryId: String
