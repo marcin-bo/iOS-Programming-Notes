@@ -31,6 +31,9 @@
     1. [JSON Encoding Using `Encodable`](#json_encode)
     1. [JSON Decoding Using `Decodable`](#json_decode)
     1. [Custom JSON Encoding And Decoding](#custom_json)
+1. [Swift Concurrency](#swift_concurrency)
+    1. [Fetching Multiple Resources Using `async / await` - Waiting For Results](#concurrency_multiple_waiting)
+    1. [Fetching Multiple Resources Using `async / await` - Parallel Execution](#concurrency_multiple_parallel)
 
 # Networking <a name="networking"></a>
 
@@ -427,5 +430,32 @@ struct Product: Codable {
         // Initialize, values are correct
         self.init(name: name, price: price)
     }
+}
+```
+
+# Swift Concurrency <a name="swift_concurrency"></a>
+
+## Fetching Multiple Resources Using `async / await` - Waiting For Each Result <a name="concurrency_multiple_waiting"></a>
+
+```swift
+func loadArticle() async {
+    let content = await loadContent() // suspends the thread, waits for its results
+    let comments = await loadComments() // suspends the thread, waits for its results
+    let similarArticles = await loadSimilarArticles() // suspends the thread, waits for its results
+
+    handleArticle(content, comments, similarArticles)
+}
+```
+
+## Fetching Multiple Resources Using `async / await` - Parallel Execution <a name="concurrency_multiple_parallel"></a>
+
+```swift
+func loadArticle() async {
+    // tasks run in parallel
+    async let content = loadContent() 
+    async let comments = loadComments()
+    async let similarArticles = loadSimilarArticles()
+
+    await handleArticle(content, comments, similarArticles) // awaits for all of their results together
 }
 ```
