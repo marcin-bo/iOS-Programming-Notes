@@ -315,7 +315,7 @@ With keeping track of different tasks:
 ## Unstructured Swift Concurrency <a name="unstructured_swift_concurrency"></a>
 - Tasks that are independent, not tight to other piece of work.
 - Tasks don't have parent task.
-- We cna store them, cancel them or interact with them later.
+- We can store them, cancel them or interact with them later.
 - Examples:
     - `Task { /* ... */ }`
     - `Task.detached { /* ... */ }`
